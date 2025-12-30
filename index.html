@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mailbox Arrow Lock Detector</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="postal-stamp">
+                <span class="stamp-text">POSTAL</span>
+            </div>
+            <h1>📮 Arrow Lock Detector</h1>
+            <p class="vintage-subtitle">Postal Service Lock Detection</p>
+            <div class="user-info">
+                <span id="user-welcome"></span>
+                <button id="logout-btn" class="btn-logout">Logout</button>
+            </div>
+            <div class="postal-divider"></div>
+        </header>
+
+        <div class="camera-section" id="camera-section">
+            <div class="stats-display">
+                <div class="stat-card">
+                    <div class="stat-icon">📷</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="total-pictures">0</div>
+                        <div class="stat-label">Pictures Taken</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔐</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="total-locks">0</div>
+                        <div class="stat-label">Total Locks Detected</div>
+                    </div>
+                </div>
+            </div>
+            <div class="video-container">
+                <video id="video-stream" autoplay playsinline></video>
+                <canvas id="capture-canvas" style="display: none;"></canvas>
+            </div>
+            <div class="controls">
+                <button id="capture-btn" class="btn btn-capture">📸 CAPTURE IMAGE</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+                <label for="file-input" class="btn btn-upload">📁 UPLOAD FILE</label>
+            </div>
+        </div>
+
+        <div class="preview-section" id="preview-section" style="display: none;">
+            <div class="image-container">
+                <canvas id="preview-canvas"></canvas>
+                <div class="count-overlay" id="count-overlay">
+                    <div class="overlay-content">
+                        <span class="overlay-label">Arrow Locks Detected:</span>
+                        <span class="overlay-count" id="overlay-count">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="back-btn" class="btn btn-back">🔙 RETURN TO CAMERA</button>
+            </div>
+        </div>
+
+        <div class="results-section" id="results-section" style="display: none;">
+            <div class="result-card">
+                <h2>DETECTION RESULTS</h2>
+                <div class="count-display">
+                    <span class="count-number" id="count-display">0</span>
+                    <span class="count-label">Arrow Lock(s) Detected</span>
+                </div>
+                <div class="correction-section">
+                    <p class="correction-label">Is this count correct?</p>
+                    <div class="correction-controls">
+                        <button id="decrease-btn" class="btn btn-correction">−</button>
+                        <input type="number" id="corrected-count" min="0" value="0" class="count-input">
+                        <button id="increase-btn" class="btn btn-correction">+</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="retake-btn" class="btn btn-retake">📸 RETAKE IMAGE</button>
+                        <button id="confirm-btn" class="btn btn-confirm">✓ CONFIRM COUNT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Processing image...</p>
+        </div>
+
+        <div class="error" id="error" style="display: none;"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

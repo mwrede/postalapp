@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Arrow Lock Detector</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-wrapper">
+            <!-- Postal Service Badge -->
+            <div class="postal-badge">
+                <div class="badge-circle">
+                    <div class="badge-inner">
+                        <div class="envelope-icon">✉</div>
+                        <div class="badge-text">U.S. POSTAL SERVICE</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Title -->
+            <div class="login-header">
+                <h1 class="login-title">Arrow Lock Detection System</h1>
+            </div>
+
+            <!-- Login Card -->
+            <div class="login-card-modern">
+                <div class="card-header">
+                    <h2>Authorized Personnel Only</h2>
+                    <p>Please authenticate to access the system</p>
+                </div>
+
+                <form id="login-form">
+                    <div class="input-wrapper">
+                        <div class="input-icon">👤</div>
+                        <input
+                            type="text"
+                            id="first-name"
+                            name="firstName"
+                            required
+                            placeholder="First Name"
+                            class="modern-input"
+                        >
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="input-icon">🏢</div>
+                        <select id="post-office" name="postOffice" required class="modern-select">
+                            <option value="">Select Post Office Location</option>
+                            <option value="Atlantis">📍 Atlantis Processing Center</option>
+                            <option value="Babylon">📍 Babylon Distribution Hub</option>
+                            <option value="Hogwarts">📍 Hogwarts Mail Facility</option>
+                            <option value="Gotham">📍 Gotham Central Office</option>
+                            <option value="The Shire">📍 The Shire Postal Station</option>
+                            <option value="Asgard">📍 Asgard Regional Center</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="login-submit-btn">
+                        <span class="btn-text">Access System</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
