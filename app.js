@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Display user info
     document.getElementById('user-welcome').textContent = `Welcome, ${firstName} (${postOffice})`;
 
-    // Load session statistics
-    loadSessionStats();
+    // Load session statistics from database
+    loadSessionStatsFromDatabase();
 
     // Load detection history from database
     loadDetectionHistory();
@@ -581,17 +581,12 @@ async function confirmCount() {
     document.getElementById('count-display').textContent = correctedCount;
     document.getElementById('overlay-count').textContent = correctedCount;
 
-    // Update session statistics
-    totalPictures++;
-    totalLocks += correctedCount;
-    saveSessionStats();
-    updateStatsDisplay();
-
     // Save detection to Supabase database
     await saveDetectionToDatabase(lastDetectedCount, correctedCount);
 
-    // Reload detection history to show the new entry
+    // Reload detection history and stats to show the new entry
     await loadDetectionHistory();
+    await loadSessionStatsFromDatabase();
 
     // Show confirmation message
     const confirmBtn = document.getElementById('confirm-btn');
@@ -644,27 +639,46 @@ async function saveDetectionToDatabase(detectedCount, confirmedCount) {
     }
 }
 
-// Load session statistics from localStorage
-function loadSessionStats() {
-    const savedPictures = localStorage.getItem('totalPictures');
-    const savedLocks = localStorage.getItem('totalLocks');
+// Load session statistics from Supabase database
+async function loadSessionStatsFromDatabase() {
+    try {
+        const firstName = localStorage.getItem('firstName');
+        const postOffice = localStorage.getItem('postOffice');
 
-    totalPictures = savedPictures ? parseInt(savedPictures) : 0;
-    totalLocks = savedLocks ? parseInt(savedLocks) : 0;
+        if (!firstName || !postOffice) {
+            console.error('User info not found in localStorage');
+            updateStatsDisplay(0, 0);
+            return;
+        }
 
-    updateStatsDisplay();
-}
+        // Fetch all detections for this user
+        const { data, error } = await supabase
+            .from('detections')
+            .select('confirmed_count')
+            .eq('first_name', firstName)
+            .eq('location', postOffice);
 
-// Save session statistics to localStorage
-function saveSessionStats() {
-    localStorage.setItem('totalPictures', totalPictures.toString());
-    localStorage.setItem('totalLocks', totalLocks.toString());
+        if (error) {
+            console.error('Error loading stats from database:', error);
+            updateStatsDisplay(0, 0);
+            return;
+        }
+
+        // Calculate totals from database
+        const pictureCount = data ? data.length : 0;
+        const locksCount = data ? data.reduce((sum, detection) => sum + (detection.confirmed_count || 0), 0) : 0;
+
+        updateStatsDisplay(pictureCount, locksCount);
+    } catch (error) {
+        console.error('Error loading stats from database:', error);
+        updateStatsDisplay(0, 0);
+    }
 }
 
 // Update stats display on screen
-function updateStatsDisplay() {
-    document.getElementById('total-pictures').textContent = totalPictures;
-    document.getElementById('total-locks').textContent = totalLocks;
+function updateStatsDisplay(pictures, locks) {
+    document.getElementById('total-pictures').textContent = pictures;
+    document.getElementById('total-locks').textContent = locks;
 }
 
 // Show error message
