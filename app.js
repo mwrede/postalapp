@@ -14,6 +14,9 @@ let correctedCount = 0;
 let totalPictures = 0;
 let totalLocks = 0;
 
+// Store detected count for database
+let lastDetectedCount = 0;
+
 // Initialize when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is logged in
@@ -350,6 +353,9 @@ async function detectArrowLocks() {
         console.log('🖼️ IMAGE FOUND:', !!annotatedImageBase64);
         console.log('═══════════════════════════════════════════');
 
+        // Store the detected count for later database save
+        lastDetectedCount = detectedCount;
+
         // If we have an annotated image, load it
         if (annotatedImageBase64) {
             const annotatedImg = new Image();
@@ -563,7 +569,7 @@ function retakeImage() {
 }
 
 // Confirm the corrected count
-function confirmCount() {
+async function confirmCount() {
     const correctedCountInput = document.getElementById('corrected-count');
     correctedCount = parseInt(correctedCountInput.value) || 0;
 
@@ -576,6 +582,9 @@ function confirmCount() {
     totalLocks += correctedCount;
     saveSessionStats();
     updateStatsDisplay();
+
+    // Save detection to Supabase database
+    await saveDetectionToDatabase(lastDetectedCount, correctedCount);
 
     // Show confirmation message
     const confirmBtn = document.getElementById('confirm-btn');
@@ -590,6 +599,42 @@ function confirmCount() {
     setTimeout(() => {
         backToCamera();
     }, 1000);
+}
+
+// Save detection record to Supabase database
+async function saveDetectionToDatabase(detectedCount, confirmedCount) {
+    try {
+        const firstName = localStorage.getItem('firstName');
+        const postOffice = localStorage.getItem('postOffice');
+        const userId = localStorage.getItem('userId');
+
+        if (!firstName || !postOffice) {
+            console.error('User info not found in localStorage');
+            return;
+        }
+
+        const detectionData = {
+            user_id: userId || null,
+            first_name: firstName,
+            location: postOffice,
+            timestamp: new Date().toISOString(),
+            detected_count: detectedCount,
+            confirmed_count: confirmedCount
+        };
+
+        const { data, error } = await supabase
+            .from('detections')
+            .insert([detectionData])
+            .select();
+
+        if (error) {
+            console.error('Error saving detection to database:', error);
+        } else {
+            console.log('Detection saved to database:', data);
+        }
+    } catch (error) {
+        console.error('Database save error:', error);
+    }
 }
 
 // Load session statistics from localStorage

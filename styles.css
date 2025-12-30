@@ -8,7 +8,7 @@
 
 body {
     font-family: 'Crimson Text', serif;
-    background: 
+    background:
         repeating-linear-gradient(
             45deg,
             #f5e6d3 0px,
@@ -21,6 +21,9 @@ body {
     padding: 20px;
     color: #2c2416;
     position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
 }
 
 body::before {
@@ -260,6 +263,9 @@ header h1 {
     text-transform: uppercase;
     position: relative;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
 }
 
 .btn::before {
@@ -924,34 +930,70 @@ header h1 {
 
 /* Responsive design */
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
     .container {
-        padding: 20px;
+        padding: 15px;
+        margin: 0;
+    }
+
+    header {
+        margin-bottom: 25px;
     }
 
     header h1 {
-        font-size: 2em;
+        font-size: 1.8em;
+        margin-bottom: 8px;
+    }
+
+    .vintage-subtitle {
+        font-size: 0.95em;
     }
 
     .postal-stamp {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
+        margin-bottom: 15px;
     }
 
     .stamp-text {
-        font-size: 0.6em;
+        font-size: 0.55em;
     }
 
-    .stats-display {
+    .user-info {
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
+        font-size: 0.9em;
+    }
+
+    .btn-logout {
+        padding: 6px 16px;
+        font-size: 0.8em;
+    }
+
+    .postal-divider {
+        width: 150px;
+        margin: 15px auto;
+    }
+
+    /* Stats display - mobile optimized */
+    .stats-display {
+        flex-direction: row;
+        gap: 10px;
+        margin-bottom: 20px;
     }
 
     .stat-card {
-        padding: 15px 20px;
+        padding: 12px 15px;
+        gap: 12px;
+        flex-direction: column;
+        text-align: center;
     }
 
     .stat-icon {
-        font-size: 2.2em;
+        font-size: 2em;
     }
 
     .stat-number {
@@ -959,59 +1001,230 @@ header h1 {
     }
 
     .stat-label {
-        font-size: 0.85em;
+        font-size: 0.75em;
+        line-height: 1.2;
     }
 
+    /* Video container - optimized for mobile camera */
     .video-container {
-        aspect-ratio: 4 / 3;
+        aspect-ratio: 3 / 4;
+        margin-bottom: 15px;
     }
 
+    .camera-section {
+        margin-bottom: 20px;
+    }
+
+    /* Controls - better touch targets */
     .controls {
         flex-direction: column;
+        gap: 12px;
     }
 
     .btn {
         width: 100%;
+        padding: 16px 25px;
+        font-size: 1em;
+        min-height: 50px;
+        touch-action: manipulation;
+    }
+
+    .btn-capture {
+        padding: 18px 30px;
+        font-size: 1.1em;
+    }
+
+    /* Image preview */
+    .image-container {
+        margin-bottom: 15px;
+    }
+
+    .count-overlay {
+        top: 10px;
+        left: 10px;
+        padding: 15px 20px;
+    }
+
+    .overlay-label {
+        font-size: 0.75em;
+    }
+
+    .overlay-count {
+        font-size: 2.5em;
+    }
+
+    /* Results section */
+    .result-card {
+        padding: 25px 20px;
+    }
+
+    .result-card h2 {
+        font-size: 1.3em;
+        margin-bottom: 20px;
     }
 
     .count-number {
         font-size: 3.5em;
     }
 
-    /* Login responsive */
-    .badge-circle {
-        width: 100px;
-        height: 100px;
+    .count-label {
+        font-size: 1.1em;
     }
 
-    .envelope-icon {
-        font-size: 2.2em;
-    }
-
-    .login-title {
-        font-size: 1.8em;
-    }
-
-    .login-tagline {
+    .correction-label {
         font-size: 1em;
     }
 
+    .correction-controls {
+        gap: 12px;
+    }
+
+    .btn-correction {
+        width: 55px;
+        height: 55px;
+        font-size: 2.2em;
+        touch-action: manipulation;
+    }
+
+    .count-input {
+        width: 90px;
+        height: 55px;
+        font-size: 1.8em;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .btn-retake,
+    .btn-confirm {
+        width: 100%;
+        min-height: 50px;
+        touch-action: manipulation;
+    }
+
+    /* Loading and error states */
+    .loading {
+        padding: 30px 20px;
+    }
+
+    .loading p {
+        font-size: 1em;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+    }
+
+    .error {
+        padding: 12px;
+        font-size: 0.9em;
+        margin-top: 15px;
+    }
+
+    /* Login page - mobile optimized */
+    .login-container {
+        padding: 10px;
+    }
+
+    .login-header {
+        margin-bottom: 25px;
+    }
+
+    .login-title {
+        font-size: 1.6em;
+        line-height: 1.2;
+    }
+
     .login-card-modern {
-        padding: 30px 25px;
+        padding: 25px 20px;
+        border-width: 4px;
     }
 
     .card-header h2 {
-        font-size: 1.4em;
+        font-size: 1.2em;
+        margin-bottom: 6px;
+    }
+
+    .card-header p {
+        font-size: 0.95em;
+    }
+
+    .input-wrapper {
+        margin-bottom: 20px;
+    }
+
+    .input-icon {
+        left: 15px;
+        font-size: 1.2em;
     }
 
     .modern-input,
     .modern-select {
-        padding: 14px 18px 14px 50px;
+        padding: 15px 18px 15px 50px;
         font-size: 1em;
+        min-height: 50px;
     }
 
     .login-submit-btn {
         padding: 16px 25px;
         font-size: 1em;
+        min-height: 50px;
+        margin-top: 25px;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    .vintage-subtitle {
+        font-size: 0.85em;
+    }
+
+    .stats-display {
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .stat-icon {
+        font-size: 1.6em;
+    }
+
+    .stat-number {
+        font-size: 1.6em;
+    }
+
+    .stat-label {
+        font-size: 0.7em;
+    }
+
+    .count-number {
+        font-size: 3em;
+    }
+
+    .result-card h2 {
+        font-size: 1.1em;
+    }
+
+    .login-title {
+        font-size: 1.4em;
+    }
+
+    .card-header h2 {
+        font-size: 1.1em;
     }
 }
