@@ -24,6 +24,9 @@ CREATE TABLE detections (
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     detected_count INTEGER NOT NULL DEFAULT 0,
     confirmed_count INTEGER NOT NULL DEFAULT 0,
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    geo_accuracy DECIMAL(10, 2),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

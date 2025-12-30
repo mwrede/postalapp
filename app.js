@@ -17,6 +17,9 @@ let totalLocks = 0;
 // Store detected count for database
 let lastDetectedCount = 0;
 
+// Store GPS location data
+let gpsLocation = null;
+
 // Initialize when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is logged in
@@ -48,7 +51,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupEventListeners();
     startCamera();
+    getGPSLocation();
 });
+
+// Get GPS location
+function getGPSLocation() {
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                gpsLocation = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy
+                };
+                console.log('GPS location acquired:', gpsLocation);
+            },
+            (error) => {
+                console.warn('GPS location error:', error.message);
+                gpsLocation = null;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        console.warn('Geolocation is not supported by this browser');
+        gpsLocation = null;
+    }
+}
 
 // Start camera stream
 async function startCamera() {
@@ -621,7 +653,10 @@ async function saveDetectionToDatabase(detectedCount, confirmedCount) {
             location: postOffice,
             timestamp: new Date().toISOString(),
             detected_count: detectedCount,
-            confirmed_count: confirmedCount
+            confirmed_count: confirmedCount,
+            latitude: gpsLocation ? gpsLocation.latitude : null,
+            longitude: gpsLocation ? gpsLocation.longitude : null,
+            geo_accuracy: gpsLocation ? gpsLocation.accuracy : null
         };
 
         const { data, error } = await supabase
