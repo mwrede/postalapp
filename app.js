@@ -35,10 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load session statistics
     loadSessionStats();
 
+    // Load detection history from database
+    loadDetectionHistory();
+
     // Setup logout button
     document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.removeItem('firstName');
         localStorage.removeItem('postOffice');
+        localStorage.removeItem('userId');
         window.location.href = 'login.html';
     });
 
@@ -586,6 +590,9 @@ async function confirmCount() {
     // Save detection to Supabase database
     await saveDetectionToDatabase(lastDetectedCount, correctedCount);
 
+    // Reload detection history to show the new entry
+    await loadDetectionHistory();
+
     // Show confirmation message
     const confirmBtn = document.getElementById('confirm-btn');
     const originalText = confirmBtn.textContent;
@@ -666,5 +673,80 @@ function showError(message) {
     errorDiv.textContent = message;
     errorDiv.style.display = 'block';
     document.getElementById('loading').style.display = 'none';
+}
+
+// Load detection history from Supabase database
+async function loadDetectionHistory() {
+    try {
+        const firstName = localStorage.getItem('firstName');
+        const postOffice = localStorage.getItem('postOffice');
+
+        if (!firstName || !postOffice) {
+            console.error('User info not found in localStorage');
+            return;
+        }
+
+        // Fetch detections for this user, ordered by most recent first
+        const { data, error } = await supabase
+            .from('detections')
+            .select('*')
+            .eq('first_name', firstName)
+            .eq('location', postOffice)
+            .order('timestamp', { ascending: false })
+            .limit(10);
+
+        if (error) {
+            console.error('Error loading detection history:', error);
+            return;
+        }
+
+        displayDetectionHistory(data);
+    } catch (error) {
+        console.error('Error loading detection history:', error);
+    }
+}
+
+// Display detection history in the UI
+function displayDetectionHistory(detections) {
+    const historyList = document.getElementById('history-list');
+
+    if (!detections || detections.length === 0) {
+        historyList.innerHTML = '<p class="history-empty">No detections yet. Capture an image to get started!</p>';
+        return;
+    }
+
+    // Build HTML for all detection items
+    const historyHTML = detections.map(detection => {
+        const date = new Date(detection.timestamp);
+        const formattedDate = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+        const formattedTime = date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        return `
+            <div class="history-item">
+                <div class="history-item-header">
+                    <span class="history-timestamp">📅 ${formattedDate} at ${formattedTime}</span>
+                    <div class="history-counts">
+                        <div class="history-count-item">
+                            <span class="history-count-label">AI Detected</span>
+                            <span class="history-count-value ai">${detection.detected_count}</span>
+                        </div>
+                        <div class="history-count-item">
+                            <span class="history-count-label">Confirmed</span>
+                            <span class="history-count-value">${detection.confirmed_count}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    historyList.innerHTML = historyHTML;
 }
 
