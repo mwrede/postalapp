@@ -17,9 +17,6 @@ let totalLocks = 0;
 // Store detected count for database
 let lastDetectedCount = 0;
 
-// Store GPS location data
-let gpsLocation = null;
-
 // Initialize when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is logged in
@@ -51,35 +48,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupEventListeners();
     startCamera();
-    getGPSLocation();
 });
 
-// Get GPS location
+// Get GPS location at detection time (returns a Promise)
 function getGPSLocation() {
-    if ('geolocation' in navigator) {
+    return new Promise((resolve) => {
+        if (!('geolocation' in navigator)) {
+            console.warn('Geolocation is not supported by this browser');
+            resolve(null);
+            return;
+        }
+
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                gpsLocation = {
+                const location = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     accuracy: position.coords.accuracy
                 };
-                console.log('GPS location acquired:', gpsLocation);
+                console.log('GPS location acquired:', location);
+                resolve(location);
             },
             (error) => {
                 console.warn('GPS location error:', error.message);
-                gpsLocation = null;
+                resolve(null);
             },
             {
                 enableHighAccuracy: true,
-                timeout: 10000,
+                timeout: 5000,
                 maximumAge: 0
             }
         );
-    } else {
-        console.warn('Geolocation is not supported by this browser');
-        gpsLocation = null;
-    }
+    });
 }
 
 // Start camera stream
@@ -647,6 +647,9 @@ async function saveDetectionToDatabase(detectedCount, confirmedCount) {
             return;
         }
 
+        // Get fresh GPS location at detection time
+        const currentLocation = await getGPSLocation();
+
         const detectionData = {
             user_id: userId || null,
             first_name: firstName,
@@ -654,9 +657,9 @@ async function saveDetectionToDatabase(detectedCount, confirmedCount) {
             timestamp: new Date().toISOString(),
             detected_count: detectedCount,
             confirmed_count: confirmedCount,
-            latitude: gpsLocation ? gpsLocation.latitude : null,
-            longitude: gpsLocation ? gpsLocation.longitude : null,
-            geo_accuracy: gpsLocation ? gpsLocation.accuracy : null
+            latitude: currentLocation ? currentLocation.latitude : null,
+            longitude: currentLocation ? currentLocation.longitude : null,
+            geo_accuracy: currentLocation ? currentLocation.accuracy : null
         };
 
         const { data, error } = await supabase
